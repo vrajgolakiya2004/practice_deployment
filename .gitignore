@@ -1,0 +1,34 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv310/
+.env/
+
+# System files
+.DS_Store
+
+# IDE settings
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+
+# Ignore system files
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore Python env
+venv/
+__pycache__/
+.env
+
+# Ignore Windows junk
+AppData/
