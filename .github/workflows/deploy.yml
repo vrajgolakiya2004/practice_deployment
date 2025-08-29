@@ -22,8 +22,7 @@ jobs:
     # 3️⃣ Prepare VPS (remove old container & create app dir)
     - name: Prepare VPS
       run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-        "docker rm -f streamlit_app || true && \
-         mkdir -p ~/streamlit-app"
+        "bash -c 'docker rm -f streamlit_app || true && mkdir -p ~/streamlit-app'"
 
     # 4️⃣ Sync code to VPS
     - name: Copy files to VPS
@@ -32,6 +31,4 @@ jobs:
     # 5️⃣ Build & run Docker container
     - name: Run Docker Container
       run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-        "cd ~/streamlit-app && \
-         docker-compose down || true && \
-         docker-compose up -d --build"
+        "bash -c 'cd ~/streamlit-app && docker-compose down || true && docker-compose up -d --build'"
