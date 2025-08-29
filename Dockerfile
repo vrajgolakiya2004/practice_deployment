@@ -1,7 +1,7 @@
 # Use official Python slim image
 FROM python:3.10-slim
 
-# Set environment variables
+# Environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
@@ -15,23 +15,23 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip
-RUN python -m pip install --upgrade pip
+RUN pip install --upgrade pip
 
-# Copy requirements first for caching
+# Copy requirements first (for caching)
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app code
+# Copy the application
 COPY . .
 
-# Create a non-root user and switch to it
+# Create non-root user
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
 # Expose Streamlit default port
 EXPOSE 8501
 
-# Run Streamlit
+# Run Streamlit app
 CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]

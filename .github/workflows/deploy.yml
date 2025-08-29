@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout code
+    # 1️⃣ Checkout repo
     - name: Checkout repo
       uses: actions/checkout@v3
 
@@ -19,11 +19,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-    # 3️⃣ Prepare VPS
+    # 3️⃣ Prepare VPS (remove old container & create app dir)
     - name: Prepare VPS
       run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
         "docker rm -f streamlit_app || true && \
-         docker rmi streamlit_app || true && \
          mkdir -p ~/streamlit-app"
 
     # 4️⃣ Sync code to VPS
@@ -34,5 +33,5 @@ jobs:
     - name: Run Docker Container
       run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
         "cd ~/streamlit-app && \
-         docker compose down || true && \
-         docker compose up -d --build"
+         docker-compose down || true && \
+         docker-compose up -d --build"
