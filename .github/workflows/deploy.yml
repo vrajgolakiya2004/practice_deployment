@@ -23,8 +23,7 @@ jobs:
           docker rm -f streamlit_app || true
           docker rmi streamlit_app || true
           mkdir -p ~/streamlit-app
-          exit
-EOF
+        EOF   # <-- EOF must align with ssh
 
     - name: Copy Files to VPS
       run: |
@@ -36,4 +35,4 @@ EOF
           cd ~/streamlit-app
           docker compose down
           docker compose up -d --build
-EOF
+        EOF
