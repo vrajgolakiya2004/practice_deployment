@@ -9,30 +9,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout code
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    # 2️⃣ Setup SSH agent with private key
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.7.0
       with:
         ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-    - name: Deploy to VPS
+    # 3️⃣ Prepare VPS (remove old container & image, create folder)
+    - name: Prepare VPS
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          docker rm -f streamlit_app || true
-          docker rmi streamlit_app || true
-          mkdir -p ~/streamlit-app
-        EOF   # <-- EOF must align with ssh
+docker rm -f streamlit_app || true
+docker rmi streamlit_app || true
+mkdir -p ~/streamlit-app
+EOF
 
-    - name: Copy Files to VPS
+    # 4️⃣ Sync code to VPS
+    - name: Copy files to VPS
       run: |
         rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/streamlit-app
 
+    # 5️⃣ Build & run Docker container on VPS
     - name: Run Docker Container
       run: |
-        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          cd ~/streamlit-app
-          docker compose down
-          docker compose up -d --build
-        EOF
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+cd ~/streamlit-app
+docker compose down || true
+docker compose up -d --build
+EOF
