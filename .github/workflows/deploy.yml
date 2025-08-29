@@ -1,9 +1,39 @@
-version: "3.8"
+name: Deploy Streamlit App
 
-services:
-  streamlit_app:
-    build: .
-    container_name: streamlit_app
-    restart: always
-    ports:
-      - "8501:8501"
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          docker rm -f streamlit_app || true
+          docker rmi streamlit_app || true
+          mkdir -p ~/streamlit-app
+          exit
+EOF
+
+    - name: Copy Files to VPS
+      run: |
+        rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/streamlit-app
+
+    - name: Run Docker Container
+      run: |
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          cd ~/streamlit-app
+          docker compose down
+          docker compose up -d --build
+EOF
