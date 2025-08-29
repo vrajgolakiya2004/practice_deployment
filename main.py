@@ -2,7 +2,6 @@
 import streamlit as st
 from datetime import datetime
 
-print("Starting the Streamlit app...")
 
 def main():
     # Page config
