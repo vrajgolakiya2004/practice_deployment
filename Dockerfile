@@ -26,12 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application
 COPY . .
 
-# Create non-root user
-RUN useradd -m appuser && chown -R appuser /app
-USER appuser
-
-# Expose Streamlit default port
+# Expose Streamlit port
 EXPOSE 8501
 
-# Run Streamlit app
+# Run Streamlit
 CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
