@@ -23,9 +23,9 @@ jobs:
     - name: Prepare VPS
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-docker rm -f streamlit_app || true
-docker rmi streamlit_app || true
-mkdir -p ~/streamlit-app
+          docker rm -f streamlit_app || true
+          docker rmi streamlit_app || true
+          mkdir -p ~/streamlit-app
 EOF
 
     # 4️⃣ Sync code to VPS
@@ -37,7 +37,7 @@ EOF
     - name: Run Docker Container
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-cd ~/streamlit-app
-docker compose down || true
-docker compose up -d --build
+          cd ~/streamlit-app
+          docker compose down || true
+          docker compose up -d --build
 EOF
