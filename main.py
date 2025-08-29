@@ -2,6 +2,8 @@
 import streamlit as st
 from datetime import datetime
 
+print("Hello")
+
 def main():
     # Page config
     st.set_page_config(page_title="Hello World App", page_icon="🌍", layout="centered")
