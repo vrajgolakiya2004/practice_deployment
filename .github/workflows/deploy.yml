@@ -19,25 +19,20 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-    # 3️⃣ Prepare VPS (remove old container & image, create folder)
+    # 3️⃣ Prepare VPS
     - name: Prepare VPS
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          docker rm -f streamlit_app || true
-          docker rmi streamlit_app || true
-          mkdir -p ~/streamlit-app
-EOF
+      run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+        "docker rm -f streamlit_app || true && \
+         docker rmi streamlit_app || true && \
+         mkdir -p ~/streamlit-app"
 
     # 4️⃣ Sync code to VPS
     - name: Copy files to VPS
-      run: |
-        rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/streamlit-app
+      run: rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/streamlit-app
 
-    # 5️⃣ Build & run Docker container on VPS
+    # 5️⃣ Build & run Docker container
     - name: Run Docker Container
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          cd ~/streamlit-app
-          docker compose down || true
-          docker compose up -d --build
-EOF
+      run: ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+        "cd ~/streamlit-app && \
+         docker compose down || true && \
+         docker compose up -d --build"
